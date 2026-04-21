@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Content Highlights</title>
+    <!-- Importing PapaParse to read the CSV file easily -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        /* --- CSS STYLING --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; color: #333; line-height: 1.6; }
+        header { background-color: #0f172a; color: white; padding: 40px 20px; text-align: center; }
+        header h1 { margin: 0; font-size: 2.5rem; }
+        header p { font-size: 1.2rem; margin-top: 10px; color: #cbd5e1; }
+        .intro-box { background: white; max-width: 900px; margin: -20px auto 20px; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; text-align: center; font-style: italic; }
+        nav { position: sticky; top: 0; background-color: #ffffff; border-bottom: 2px solid #ddd; padding: 10px 0; z-index: 1000; overflow-x: auto; white-space: nowrap; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        nav a { display: inline-block; padding: 10px 15px; text-decoration: none; color: #333; font-weight: bold; font-size: 0.9rem; }
+        nav a:hover { color: #2563eb; background-color: #f0f9ff; border-radius: 4px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .channel-section { background: white; margin-bottom: 40px; padding: 30px; border-radius: 8px; border-left: 6px solid #2563eb; box-shadow: 0 2px 5px rgba(0,0,0,0.05); scroll-margin-top: 80px; }
+        .channel-title { color: #1e293b; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 0; }
+        .table-header { background-color: #e2e8f0; padding: 8px 12px; font-weight: bold; border-radius: 4px; margin-top: 20px; margin-bottom: 10px; color: #334155; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.95rem; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #f8fafc; color: #475569; }
+        tr:last-child td { border-bottom: none; }
+        .description-box { background-color: #fffbeb; border: 1px solid #fcd34d; padding: 15px; border-radius: 6px; font-size: 0.95rem; color: #78350f; }
+        .trivia-box { background-color: #e0f2f7; border: 1px solid #4fc3f7; padding: 15px; border-radius: 6px; font-size: 0.95rem; color: #01579b; margin-top: 15px; }
+        .trivia-answer { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #a7d9f2; }
+        .toggle-answer { cursor: pointer; text-decoration: underline; color: #0288d1; }
+        footer { text-align: center; padding: 20px; color: #64748b; font-size: 0.8rem; }
+        @media (max-width: 600px) { th, td { padding: 8px; font-size: 0.85rem; } nav a { padding: 10px; } .channel-section { padding: 20px; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Monthly Content Highlights</h1>
+        <p>April 2026 Edition</p>
+    </header>
+
+    <div class="intro-box">
+        <h3>👋 Welcome to the April Highlights!</h3>
+        <p>It is the time for April, summer season is ON<br>Exciting movies are planned so stayed Tuned in Attention</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="#StarGold">Star Gold</a>
+        <a href="#StarGold2">Star Gold 2</a>
+        <a href="#ColorsCineplex">Colors Cineplex</a>
+        <a href="#StarGoldRomance">Star Gold Romance</a>
+        <a href="#StarGoldThrills">Star Gold Thrills</a>
+        <a href="#StarUtsavMovies">Star Utsav Movies</a>
+        <a href="#ColorsCineplexSuperhits">Colors Cineplex Superhits</a>
+        <a href="#ColorsCineplexBollywood">Colors Cineplex Bollywood</a>
+    </nav>
+
+    <div class="container" id="main-content">
+        <p style="text-align: center;">Loading data from Google Sheet...</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Internal Communications Team | JioStar</p>
+    </footer>
+
+    <!-- --- THE MAGIC SCRIPT --- -->
+    <script>
+        // 1. PASTE YOUR GOOGLE SHEET CSV LINK HERE (Inside the quotes)
+        const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRe_kDo6L-2BYFaQ3gkBpZeDn0OgcGJP1AILs8tTl4tMhUw3ZQbQ__wCHCsIk04o2jNGIFILWGu2xqx/pub?gid=0&single=true&output=csv";
+
+        // 2. Define Channels and Colors (DO NOT CHANGE THESE IDs and names, they link to the HTML structure)
+        const channels = [
+            { id: "StarGold", name: "Star Gold", color: "#2563eb" },
+            { id: "StarGold2", name: "Star Gold 2", color: "#eab308" },
+            { id: "ColorsCineplex", name: "Colors Cineplex", color: "#10b981" },
+            { id: "StarGoldRomance", name: "Star Gold Romance", color: "#ec4899" },
+            { id: "StarGoldThrills", name: "Star Gold Thrills", color: "#ef4444" },
+            { id: "StarUtsavMovies", name: "Star Utsav Movies", color: "#6366f1" },
+            { id: "ColorsCineplexSuperhits", name: "Colors Cineplex Superhits", color: "#06b6d4" },
+            { id: "ColorsCineplexBollywood", name: "Colors Cineplex Bollywood", color: "#8b5cf6" }
+        ];
+
+        // 3. Define Headline Rules
+        const headlineProperties = [
+            "World Television Premiere", "Channel Premiere", "Special Screening",
+            "Blockbuster of the month", "Blockbuster Of The Month", "Movie of the Month", 
+            "Movie of the month", "2nd Airing", "3rd Airing", "Sunday Premiere League" // Added for Colors Cineplex Superhits
+        ];
+
+        // 4. Function to Fetch and Display Data
+        function init() {
+            Papa.parse(sheetURL, {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    const data = results.data.filter(row => row.Channel && row.Status === "Published"); // Filter out draft rows
+                    const container = document.getElementById('main-content');
+                    container.innerHTML = ""; // Clear loading message
+
+                    channels.forEach(channel => {
+                        // Filter data for this channel (Normalized to handle slight spelling diffs)
+                        const channelData = data.filter(row => row.Channel && row.Channel.trim().toLowerCase() === channel.name.toLowerCase());
+                        
+                        // Segregate Headlines vs Specials
+                        let headlines = [];
+                        let specials = [];
+
+                        channelData.forEach(row => {
+                            const prop = row.Property ? row.Property.trim() : "";
+                            // Check for headline properties
+                            if (headlineProperties.includes(prop)) {
+                                headlines.push(row);
+                            } else {
+                                specials.push(row);
+                            }
+                        });
+
+                        // Build HTML Section
+                        const section = document.createElement('section');
+                        section.id = channel.id; // Matches Nav Link
+                        section.className = 'channel-section';
+                        section.style.borderLeftColor = channel.color;
+
+                        let htmlContent = `<h2 class="channel-title">${channel.name}</h2>`;
+
+                        // Render Headlines Table
+                        if (headlines.length > 0) {
+                            htmlContent += `<div class="table-header">📺 Headlines</div>
+                                            <table><thead><tr><th style="width:30%">Property</th><th style="width:40%">Title</th><th style="width:30%">Date & Time</th></tr></thead><tbody>`;
+                            headlines.forEach(row => {
+                                htmlContent += `<tr><td>${row.Property}</td><td>${row.Title}</td><td>${row.Date}</td></tr>`;
+                                // Add Trivia if available for WTPs
+                                if (row.Property === "World Television Premiere" && row.TriviaQuestion_Final && row.TriviaAnswer_Final) {
+                                    htmlContent += `<tr><td colspan="3"><div class="trivia-box">
+                                                        <strong>Trivia:</strong> ${row.TriviaQuestion_Final}
+                                                        <span class="toggle-answer" data-target="answer-${row.Channel}-${row.Title.replace(/\s/g,'-')}">Show Answer</span>
+                                                        <div class="trivia-answer" id="answer-${row.Channel}-${row.Title.replace(/\s/g,'-')}">${row.TriviaAnswer_Final}</div>
+                                                    </div></td></tr>`;
+                                }
+                            });
+                            htmlContent += `</tbody></table>`;
+                        }
+
+                        // Render Specials Table
+                        if (specials.length > 0) {
+                            htmlContent += `<div class="table-header">✨ Specials</div>
+                                            <table><thead><tr><th style="width:30%">Property</th><th style="width:40%">Titles</th><th style="width:30%">Date & Time</th></tr></thead><tbody>`;
+                            specials.forEach(row => {
+                                htmlContent += `<tr><td>${row.Property}</td><td>${row.Title}</td><td>${row.Date}</td></tr>`;
+                                // Add Hinglish Rhyme if available
+                                if (row.HinglishRhyme_Final) {
+                                    htmlContent += `<tr><td colspan="3"><div class="description-box">
+                                                        <strong>Rhyme:</strong> ${row.HinglishRhyme_Final}
+                                                    </div></td></tr>`;
+                                }
+                            });
+                            htmlContent += `</tbody></table>`;
+                        }
+
+                        // Default description for specials
+                        htmlContent += `<div class="description-box">
+                                            <strong>✨ ${channel.name} Specials:</strong><br>
+                                            Explore the special events and curated programming listed above.
+                                        </div>`;
+
+                        section.innerHTML = htmlContent;
+                        container.appendChild(section);
+                    });
+
+                    // Add event listeners for trivia answers after content is loaded
+                    document.querySelectorAll('.toggle-answer').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const targetId = this.dataset.target;
+                            const answerDiv = document.getElementById(targetId);
+                            if (answerDiv.style.display === 'none' || answerDiv.style.display === '') {
+                                answerDiv.style.display = 'block';
+                                this.textContent = 'Hide Answer';
+                            } else {
+                                answerDiv.style.display = 'none';
+                                this.textContent = 'Show Answer';
+                            }
+                        });
+                    });
+                }
+            });
+        }
+
+        // Run the script
+        init();
+    </script>
+</body>
+</html>
